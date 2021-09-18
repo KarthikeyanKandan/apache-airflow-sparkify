@@ -29,7 +29,8 @@ start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
-    dag=dag
+    dag=dag,
+    redshift_conn_id = 
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
