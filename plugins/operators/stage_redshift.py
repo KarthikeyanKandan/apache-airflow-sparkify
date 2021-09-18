@@ -30,7 +30,7 @@ class StageToRedshiftOperator(BaseOperator):
                  s3_bucket = "",
                  s3_key = "",
                  region = "",
-                 file_format = "JSON",
+                 file_format = "",
                  *args, **kwargs):
 
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
@@ -43,7 +43,9 @@ class StageToRedshiftOperator(BaseOperator):
         self.s3_bucket = s3_bucket
         self.s3_key = s3_key
         self.region = region
+        self.file_format = file_format
         self.execution_date = kwargs.get('execution_date')
+
 
     def execute(self, context):
         """
@@ -74,7 +76,7 @@ class StageToRedshiftOperator(BaseOperator):
 
         additional = ""
         if file_format=="CSV":
-            additional=" DELIMITER ',' IGNOREHEADER 1 "
+            additional = " DELIMITER ',' IGNOREHEADER 1 "
         
         formatted_sql = StageToRedshiftOperator.copy_sql.format(
             self.table,
