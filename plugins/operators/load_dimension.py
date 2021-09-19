@@ -12,8 +12,7 @@ class LoadDimensionOperator(BaseOperator):
                  redshift_conn_id = "",
                  sql_query = "",
                  table = "",
-                 truncate = 
-                 
+                 truncate = "",               
                  *args, **kwargs):
 
         super(LoadDimensionOperator, self).__init__(*args, **kwargs)
@@ -21,8 +20,17 @@ class LoadDimensionOperator(BaseOperator):
         self.redshift_conn_id = redshift_conn_id
         self.aws_credentials_id = aws_credentials_id
         self.sql_query = sql_query
+        self.table = table
+        self.truncate = truncate
 
     def execute(self, context):
+        """
+        truncate-insert pattern where the target table is emptied before the load
+        Insert data from staging to dimension tables
+        """
         redshift = PostgresHook(postgres_conn_id = self.redshift_conn_id)
-        redshift.run(str(self.sql_query))
+        if self.truncate:
+            redshift.run(f"TRUNCATE TABLE {self.table}")
+        formatted_sql = self.sql_query.format(self.table)
+        redshift.run(formatted_sql)
         self.log.info('Success: Data moved from Staging to Dimension table')
