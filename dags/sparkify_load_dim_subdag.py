@@ -4,7 +4,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators import LoadDimensionOperator
 from helpers import SqlQueries
 
-def load_dim_tables_dag(
+def load_dimensional_tables_dag(
         parent_dag_name,
         task_id,
         redshift_conn_id,
