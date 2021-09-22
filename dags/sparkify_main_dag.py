@@ -6,21 +6,28 @@ from airflow.operators.subdag_operator import SubDagOperator
 from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
                                 LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
+from sparkify_load_dim_subdag import load_dimensional_tables_dag
+
 
 # AWS_KEY = os.environ.get('AWS_KEY')
 # AWS_SECRET = os.environ.get('AWS_SECRET')
+start_date = datetime.utcnow()
 
 default_args = {
     'owner': 'Karthikeyan_Kandan',
-    'start_date': datetime(2019, 1, 12),
+    'start_date': datetime(2018, 5, 1),
+    'end_date': datetime(2018, 11, 30),
     'email_on_failure' : True,
     'retries' : 3,
     'retry_delay' : datetime.timedelta(minutes = 5),
     'email_on_retry' : False,
-    'depends_on_past' : False
+    'depends_on_past' : False,
+    'catchup' : False
 }
 
-dag = DAG('udac_example_dag',
+dag_name='sparkify_main_dag'
+
+dag = DAG(dag_name,
           default_args=default_args,
           description='Load and transform data in Redshift with Airflow',
           schedule_interval='0 * * * *'
@@ -38,8 +45,8 @@ create_redshift_tables = CreateTablesOperator(
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
-    redshift_conn_id = redshift,
-    aws_credentials_id = aws_credentials_id,
+    redshift_conn_id = 'redshift',
+    aws_credentials_id = 'aws_credentials_id',
     table = 'events',
     s3_bucket = 'udacity_dend',
     s3_key = 'log_data',

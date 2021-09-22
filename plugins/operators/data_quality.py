@@ -13,7 +13,6 @@ class DataQualityOperator(BaseOperator):
                  aws_credentials_id = "",
                  tables = [],
                  *args, **kwargs):
-
         super(DataQualityOperator, self).__init__(*args, **kwargs)
         # Mapped params here
         self.redshift_conn_id = redshift_conn_id
